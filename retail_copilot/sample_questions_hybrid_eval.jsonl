@@ -1,0 +1,6 @@
+{"question": "What are the top 3 products by revenue?", "format": "list"}
+{"question": "What is the average order value for summer beverages 1997?", "format": "float"}
+{"question": "What is the total revenue from Winter Classics 1997?", "format": "float"}
+{"question": "Who is the top customer by gross margin?", "format": "str"}
+{"question": "What is the return policy for Beverages?", "format": "str"}
+{"question": "What is the gross margin for Condiments in 1997?", "format": "float"}
