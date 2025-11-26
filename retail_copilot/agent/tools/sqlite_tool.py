@@ -5,25 +5,16 @@ from typing import Any, Dict, List, Tuple
 class SQLiteTool:
     """
     Lightweight helper for interacting with the local Northwind SQLite database.
-
-    - Opens a single connection (kept open during agent runtime)
-    - Provides safe SQL execution with error handling
-    - Exposes schema information through PRAGMA queries
     """
 
     def __init__(self, db_path: str):
         self.db_path = db_path
         self.conn = sqlite3.connect(self.db_path)
-        self.conn.row_factory = sqlite3.Row  # return dict-like rows
+        self.conn.row_factory = sqlite3.Row
 
     def execute(self, sql: str) -> Tuple[List[str], List[Dict[str, Any]], str]:
         """
-        Execute a SQL query and return:
-            - column names
-            - list of rows (as dicts)
-            - error message ('' if OK)
-
-        We don't raise errors—LangGraph's repair loop will handle failures.
+        Execute a SQL query and return columns, rows (list of dicts), and an error string.
         """
         try:
             cursor = self.conn.execute(sql)
@@ -35,12 +26,11 @@ class SQLiteTool:
 
     def get_schema(self) -> Dict[str, List[str]]:
         """
-        Return a simple schema dictionary:
-            { table_name: [column1, column2, ...], ... }
+        Return a dict mapping table_name -> list of column names.
         """
         schema = {}
         tables = self.conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='table'"
+            "SELECT name FROM sqlite_master WHERE type='table' OR type='view'"
         ).fetchall()
 
         for t in tables:
@@ -51,5 +41,4 @@ class SQLiteTool:
         return schema
 
     def close(self):
-        """Close the database connection."""
         self.conn.close()
